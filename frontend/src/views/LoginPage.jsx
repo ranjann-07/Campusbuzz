@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import ThreeCanvas from '../components/ThreeCanvas';
 import InteractiveRobotMascot from '../components/InteractiveRobotMascot';
 import { 
@@ -131,7 +132,7 @@ export default function LoginPage({ isModal = false, onClose }) {
 
     try {
       if (isSignUp) {
-        const res = await fetch('/api/auth/register', {
+        const res = await fetch(apiUrl('/api/auth/register'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -146,7 +147,7 @@ export default function LoginPage({ isModal = false, onClose }) {
 
         const data = await res.json();
         if (data.success && data.user) {
-          loginUser(data.user);
+          loginUser(data.user, data.token);
           triggerConfetti();
           if (onClose) onClose();
           setCurrentView('dashboard');
@@ -154,7 +155,7 @@ export default function LoginPage({ isModal = false, onClose }) {
           setErrorMessage(data.message || 'Registration failed. Please try again.');
         }
       } else {
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch(apiUrl('/api/auth/login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, role: roleMode })
@@ -162,7 +163,7 @@ export default function LoginPage({ isModal = false, onClose }) {
 
         const data = await res.json();
         if (data.success && data.user) {
-          loginUser(data.user);
+          loginUser(data.user, data.token);
           triggerConfetti();
           if (onClose) onClose();
           showToast('Welcome to CampusBuzz! Scroll down to explore campus and enter your dashboard.', 'success');

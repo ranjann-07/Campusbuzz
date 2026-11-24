@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { 
   Bookmark, 
   Heart, 
@@ -56,7 +57,7 @@ export default function SavedPostsView() {
     const fetchSavedPosts = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/posts?limit=50');
+        const res = await fetch(apiUrl('/api/posts?limit=50'));
         const data = await res.json();
         if (data.success && data.posts && data.posts.length > 0) {
           const matched = data.posts.filter(p => savedPostIds.includes(p.id));

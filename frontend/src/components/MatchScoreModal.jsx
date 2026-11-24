@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import AiOrb from './AiOrb';
 import { X, Sparkles, CheckCircle2, Star, TrendingUp, Users, ArrowUpRight } from 'lucide-react';
 
@@ -12,7 +13,7 @@ export default function MatchScoreModal({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      fetch('/api/match-score')
+      fetch(apiUrl('/api/match-score'))
         .then(r => r.json())
         .then(data => {
           if (data.success) setMatchData(data);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import TiltCard from '../components/TiltCard';
 import { 
   Megaphone, 
@@ -153,7 +154,7 @@ export default function CampaignsModule() {
 
     setApplying(true);
     try {
-      const res = await fetch(`/api/campaigns/${selectedCampaignForApply.id}/apply`, {
+      const res = await fetch(apiUrl(`/api/campaigns/${selectedCampaignForApply.id}/apply`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import InteractiveCalendar from '../components/InteractiveCalendar';
 import { 
   Calendar as CalendarIcon, 
@@ -29,7 +30,7 @@ export default function CalendarView() {
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/events?category=' + encodeURIComponent(selectedCategory))
+    fetch(apiUrl('/api/events?category=' + encodeURIComponent(selectedCategory)))
       .then(r => r.json())
       .then(data => {
         if (data.success) {

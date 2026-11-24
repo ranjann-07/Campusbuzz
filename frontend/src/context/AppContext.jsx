@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { apiUrl, getAuthHeaders } from '../config/api';
 
 const AppContext = createContext();
 
@@ -153,12 +154,12 @@ export function AppProvider({ children }) {
     setLoading(true);
     try {
       const [creatorsRes, campaignsRes, collabsRes, eventsRes, analyticsRes, dbRes] = await Promise.all([
-        fetch('/api/creators').then(r => r.json()).catch(() => ({ data: [] })),
-        fetch('/api/campaigns').then(r => r.json()).catch(() => ({ data: [] })),
-        fetch('/api/collaborations').then(r => r.json()).catch(() => ({ data: [] })),
-        fetch('/api/events').then(r => r.json()).catch(() => ({ data: [] })),
-        fetch('/api/analytics').then(r => r.json()).catch(() => ({})),
-        fetch('/api/db-status').then(r => r.json()).catch(() => ({}))
+        fetch(apiUrl('/api/creators')).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(apiUrl('/api/campaigns')).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(apiUrl('/api/collaborations')).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(apiUrl('/api/events')).then(r => r.json()).catch(() => ({ data: [] })),
+        fetch(apiUrl('/api/analytics')).then(r => r.json()).catch(() => ({})),
+        fetch(apiUrl('/api/db-status')).then(r => r.json()).catch(() => ({}))
       ]);
 
       if (creatorsRes.data) setCreators(creatorsRes.data);
@@ -183,9 +184,9 @@ export function AppProvider({ children }) {
   // CRUD Actions
   const createCampaign = async (campaignData) => {
     try {
-      const res = await fetch('/api/campaigns', {
+      const res = await fetch(apiUrl('/api/campaigns'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(campaignData)
       });
       const data = await res.json();
@@ -207,9 +208,9 @@ export function AppProvider({ children }) {
 
   const createCreator = async (creatorData) => {
     try {
-      const res = await fetch('/api/creators', {
+      const res = await fetch(apiUrl('/api/creators'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(creatorData)
       });
       const data = await res.json();
@@ -231,7 +232,11 @@ export function AppProvider({ children }) {
 
   const registerForEvent = async (eventId) => {
     try {
-      const res = await fetch(`/api/events/${eventId}/register`, { method: 'POST' });
+      const res = await fetch(apiUrl(`/api/events/${eventId}/register`), {
+        method: 'POST',
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ student_id: currentUser?.id || 1 })
+      });
       const data = await res.json();
       if (data.success) {
         setEvents(prev => prev.map(ev => ev.id === eventId ? { ...ev, registered_count: (ev.registered_count || 0) + 1 } : ev));
@@ -245,9 +250,9 @@ export function AppProvider({ children }) {
 
   const updateCollaborationStatus = async (collabId, project_status) => {
     try {
-      const res = await fetch(`/api/collaborations/${collabId}`, {
+      const res = await fetch(apiUrl(`/api/collaborations/${collabId}`), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ project_status })
       });
       const data = await res.json();
@@ -262,9 +267,9 @@ export function AppProvider({ children }) {
 
   const verifyCreatorAdmin = async (creatorId, status) => {
     try {
-      const res = await fetch(`/api/admin/verify-creator/${creatorId}`, {
+      const res = await fetch(apiUrl(`/api/admin/verify-creator/${creatorId}`), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ status })
       });
       const data = await res.json();
@@ -277,14 +282,22 @@ export function AppProvider({ children }) {
     }
   };
 
-  const loginUser = (userObj) => {
+  const loginUser = (userObj, token) => {
     setCurrentUser(userObj);
+    try {
+      if (token) localStorage.setItem('campusbuzz_token', token);
+      localStorage.setItem('campusbuzz_user', JSON.stringify(userObj));
+    } catch {}
     setIsAuthOpen(false);
     showToast(`Welcome back, ${userObj.name}!`, 'success');
   };
 
   const logoutUser = () => {
     setCurrentUser(null);
+    try {
+      localStorage.removeItem('campusbuzz_token');
+      localStorage.removeItem('campusbuzz_user');
+    } catch {}
     showToast('Logged out successfully', 'info');
   };
 

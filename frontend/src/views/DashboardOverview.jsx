@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import Sparkline from '../components/Sparkline';
 import EngagementChart from '../components/EngagementChart';
 import AiOrb from '../components/AiOrb';
@@ -137,7 +138,7 @@ export default function DashboardOverview() {
   const [calendarViewMode, setCalendarViewMode] = useState('list'); // 'list' or 'calendar'
 
   useEffect(() => {
-    fetch('/api/dashboard/stats')
+    fetch(apiUrl('/api/dashboard/stats'))
       .then(r => r.json())
       .then(data => {
         if (data.stats) setDbStats(data.stats);

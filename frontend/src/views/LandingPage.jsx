@@ -42,6 +42,7 @@ export default function LandingPage() {
     events,
     campaigns,
     openDetailDrawer,
+    showToast,
     theme
   } = useApp();
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import TiltCard from '../components/TiltCard';
 import InteractiveCalendar from '../components/InteractiveCalendar';
 import { 
@@ -150,7 +151,7 @@ export default function EventsModule() {
         student_id: studentId,
         status: eventStatusTab
       });
-      const res = await fetch(`/api/events?${params}`);
+      const res = await fetch(apiUrl(`/api/events?${params}`));
       const data = await res.json();
       if (data.success && data.data && data.data.length > 0) {
         setEvents(data.data);
@@ -180,7 +181,7 @@ export default function EventsModule() {
 
   const handleRegisterToggle = async (event) => {
     const isRegistered = event.user_registered;
-    const endpoint = isRegistered ? `/api/events/${event.id}/unregister` : `/api/events/${event.id}/register`;
+    const endpoint = apiUrl(isRegistered ? `/api/events/${event.id}/unregister` : `/api/events/${event.id}/register`);
 
     try {
       const res = await fetch(endpoint, {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import TiltCard from '../components/TiltCard';
 import { 
   Heart, 
@@ -57,7 +58,7 @@ export default function SocialFeed() {
         type: selectedType,
         search: searchQuery
       });
-      const res = await fetch(`/api/posts?${queryParams}`);
+      const res = await fetch(apiUrl(`/api/posts?${queryParams}`));
       const data = await res.json();
       if (data.success) {
         setPosts(prev => append ? [...prev, ...data.posts] : data.posts);
@@ -83,7 +84,7 @@ export default function SocialFeed() {
   // Toggle Like
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`/api/posts/${postId}/like`, {
+      const res = await fetch(apiUrl(`/api/posts/${postId}/like`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ student_id: currentUser?.id || 1 })
@@ -116,7 +117,7 @@ export default function SocialFeed() {
     setActiveCommentPostId(postId);
     if (!commentsMap[postId]) {
       try {
-        const res = await fetch(`/api/posts/${postId}/comments`);
+        const res = await fetch(apiUrl(`/api/posts/${postId}/comments`));
         const data = await res.json();
         if (data.comments) {
           setCommentsMap(prev => ({ ...prev, [postId]: data.comments }));
@@ -133,7 +134,7 @@ export default function SocialFeed() {
     if (!commentInput.trim()) return;
 
     try {
-      const res = await fetch(`/api/posts/${postId}/comments`, {
+      const res = await fetch(apiUrl(`/api/posts/${postId}/comments`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -162,7 +163,7 @@ export default function SocialFeed() {
 
     setCreating(true);
     try {
-      const res = await fetch('/api/posts', {
+      const res = await fetch(apiUrl('/api/posts'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -192,7 +193,7 @@ export default function SocialFeed() {
   // Delete own post
   const handleDeletePost = async (postId) => {
     try {
-      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+      const res = await fetch(apiUrl(`/api/posts/${postId}`), { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setPosts(prev => prev.filter(p => p.id !== postId));

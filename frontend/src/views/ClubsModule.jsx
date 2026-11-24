@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import TiltCard from '../components/TiltCard';
 import { 
   Users, 
@@ -28,7 +29,7 @@ export default function ClubsModule() {
     setLoading(true);
     try {
       const studentId = currentUser?.id || 1;
-      const res = await fetch(`/api/clubs?student_id=${studentId}`);
+      const res = await fetch(apiUrl(`/api/clubs?student_id=${studentId}`));
       const data = await res.json();
       if (data.success) {
         setClubs(data.data);
@@ -46,7 +47,7 @@ export default function ClubsModule() {
 
   const handleJoinToggle = async (club) => {
     const isMember = club.is_member;
-    const endpoint = isMember ? `/api/clubs/${club.id}/leave` : `/api/clubs/${club.id}/join`;
+    const endpoint = apiUrl(isMember ? `/api/clubs/${club.id}/leave` : `/api/clubs/${club.id}/join`);
 
     try {
       const res = await fetch(endpoint, {

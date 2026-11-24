@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { 
   ShieldCheck, 
   Check, 
@@ -30,7 +31,7 @@ export default function AdminPanel() {
   const [testingDb, setTestingDb] = useState(false);
 
   useEffect(() => {
-    fetch('/api/admin/overview')
+    fetch(apiUrl('/api/admin/overview'))
       .then(r => r.json())
       .then(data => {
         if (data.stats) setDbDetails(data.stats);
@@ -41,10 +42,10 @@ export default function AdminPanel() {
   const handleTestDb = async () => {
     setTestingDb(true);
     try {
-      const res = await fetch('/api/db-status');
+      const res = await fetch(apiUrl('/api/db-status'));
       const data = await res.json();
       setDbDetails(prev => ({ ...prev, ...data }));
-      showToast(`Database Engine Status: ${data.mode.toUpperCase()} (Online)`, 'success');
+      showToast(`Database Engine Status: ${(data.mode || 'mongodb').toUpperCase()} (Online)`, 'success');
       triggerConfetti();
     } catch (e) {
       showToast('Error checking DB status', 'error');
@@ -95,10 +96,10 @@ export default function AdminPanel() {
             <Database className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-xl font-bold font-mono text-cyan-300 uppercase">
-            {dbStatus.mode === 'mysql' ? 'MySQL 8.0' : 'Persistent Engine'}
+            {dbStatus.mode === 'mongodb' ? 'MongoDB Atlas' : dbStatus.mode === 'mysql' ? 'MySQL 8.0' : 'Persistent Engine'}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
-            {dbStatus.mode === 'mysql' ? 'Connected via localhost:3306' : 'Local schema-backed store'}
+            {dbStatus.mode === 'mongodb' ? 'Connected to Atlas Cloud Cluster' : 'Local schema-backed store'}
           </p>
         </div>
 
@@ -206,18 +207,17 @@ export default function AdminPanel() {
       {/* Database Schema & Integration Details */}
       <div className="glass-panel p-6 rounded-2xl">
         <h3 className="text-base font-bold text-white font-display mb-2">
-          MySQL 8.0 Schema Architecture
+          MongoDB Atlas Architecture
         </h3>
         <p className="text-xs text-slate-400 mb-4">
-          Integrated with `schema.sql` supporting tables: <code className="text-purple-300">users</code>, <code className="text-purple-300">creators</code>, <code className="text-purple-300">campaigns</code>, <code className="text-purple-300">collaborations</code>, <code className="text-purple-300">messages</code>, <code className="text-purple-300">events</code>, <code className="text-purple-300">activity_log</code>.
+          Integrated with Mongoose schemas supporting collections: <code className="text-purple-300">students</code>, <code className="text-purple-300">posts</code>, <code className="text-purple-300">campaigns</code>, <code className="text-purple-300">collaborations</code>, <code className="text-purple-300">messages</code>, <code className="text-purple-300">events</code>, <code className="text-purple-300">clubs</code>.
         </p>
 
         <div className="bg-[#090b10] border border-white/10 rounded-xl p-4 font-mono text-xs text-slate-300 overflow-x-auto space-y-1">
-          <p className="text-slate-500">-- Current Database Credentials & Configuration</p>
-          <p><span className="text-purple-400">MYSQL_HOST</span>: localhost</p>
-          <p><span className="text-purple-400">MYSQL_PORT</span>: 3306</p>
-          <p><span className="text-purple-400">MYSQL_DATABASE</span>: campusbuzz_db</p>
-          <p><span className="text-purple-400">ENGINE_FALLBACK</span>: Automated zero-downtime local persistence activated</p>
+          <p className="text-slate-500">-- Active Cloud Database Configuration (Credentials Masked)</p>
+          <p><span className="text-purple-400">DB_PROVIDER</span>: {dbStatus.mode === 'mongodb' ? 'MongoDB Atlas' : 'Local Snapshot Mode'}</p>
+          <p><span className="text-purple-400">DB_NAME</span>: {dbStatus.database || 'campusbuzz_db'}</p>
+          <p><span className="text-purple-400">STATUS</span>: {dbStatus.active ? 'Connected & Operational' : 'Offline Fallback'}</p>
         </div>
       </div>
 

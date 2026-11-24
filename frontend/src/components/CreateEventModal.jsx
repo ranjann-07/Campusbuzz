@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { X, Calendar, MapPin, Sparkles, Plus } from 'lucide-react';
 
 export default function CreateEventModal() {
@@ -23,7 +24,7 @@ export default function CreateEventModal() {
     setSubmitting(true);
 
     try {
-      const res = await fetch('/api/events', {
+      const res = await fetch(apiUrl('/api/events'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

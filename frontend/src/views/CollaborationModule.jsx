@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { 
   MessageSquare, 
   Send, 
@@ -26,7 +27,7 @@ export default function CollaborationModule() {
   // Fetch messages for selected collaboration
   const fetchMessages = async (collabId) => {
     try {
-      const res = await fetch(`/api/collaborations/${collabId}/messages`);
+      const res = await fetch(apiUrl(`/api/collaborations/${collabId}/messages`));
       const data = await res.json();
       if (data.data) {
         setMessages(data.data);
@@ -54,7 +55,7 @@ export default function CollaborationModule() {
     };
 
     try {
-      const res = await fetch(`/api/collaborations/${selectedCollabId}/messages`, {
+      const res = await fetch(apiUrl(`/api/collaborations/${selectedCollabId}/messages`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMsg)

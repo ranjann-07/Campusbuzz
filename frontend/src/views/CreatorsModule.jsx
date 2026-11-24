@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import TiltCard from '../components/TiltCard';
 import { 
   Search, 
@@ -52,7 +53,7 @@ export default function CreatorsModule() {
         sortBy
       });
 
-      const res = await fetch(`/api/students?${params}`);
+      const res = await fetch(apiUrl(`/api/students?${params}`));
       const data = await res.json();
       if (data.success) {
         setStudents(data.data);

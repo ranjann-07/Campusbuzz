@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import EditProfileModal from '../components/EditProfileModal';
 import { 
   User, 
@@ -31,7 +32,7 @@ export default function MyProfileView() {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/students/${studentId}`);
+      const res = await fetch(apiUrl(`/api/students/${studentId}`));
       const data = await res.json();
       if (data.success) {
         setStudentDetails(data.student);

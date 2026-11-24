@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { 
   X, 
   Calendar, 
@@ -68,7 +69,7 @@ export default function DetailDrawer() {
         const creatorId = data.id;
         if (creatorId) {
           setLoadingPosts(true);
-          fetch(`/api/posts?author_id=${creatorId}&limit=8`)
+          fetch(apiUrl(`/api/posts?author_id=${creatorId}&limit=8`))
             .then(r => r.json())
             .then(res => {
               if (res.success && res.posts) {

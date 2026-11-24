@@ -1,15 +1,17 @@
-const mysql = require('mysql2/promise');
+const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
-
-// Initial in-memory / local storage seed data
+const zlib = require('zlib');
 const initialData = require('./seedData');
+const { Counter } = require('../models');
+const { seedDatabaseIfNeeded } = require('../scripts/seedMongo');
 
-let dbMode = 'memory'; // 'mysql' or 'memory'
-let pool = null;
+let dbMode = 'disconnected'; // 'mongodb' | 'memory' | 'disconnected'
+let dbInitPromise = null;
 
-// Persistent local JSON file fallback for offline/embedded mode
+// Persistent local snapshot only used for non-production fallback when MONGODB_URI is unset
 const LOCAL_STORAGE_PATH = path.join(__dirname, '../data/local_db.json');
+let memoryDb = { ...initialData };
 
 function ensureDir(filePath) {
   const dirname = path.dirname(filePath);
@@ -18,23 +20,30 @@ function ensureDir(filePath) {
   }
 }
 
-let memoryDb = { ...initialData };
-
 function loadLocalDb() {
   ensureDir(LOCAL_STORAGE_PATH);
+  try {
+    const seedGzPath = path.join(__dirname, '../data/mongo_seed.json.gz');
+    if (fs.existsSync(seedGzPath)) {
+      const rawBuf = zlib.gunzipSync(fs.readFileSync(seedGzPath));
+      const snap = JSON.parse(rawBuf.toString('utf8'));
+      memoryDb = {
+        ...initialData,
+        ...snap
+      };
+      return;
+    }
+  } catch (err) {
+    console.warn('⚠️ Could not read compressed seed snapshot:', err.message);
+  }
+
   if (fs.existsSync(LOCAL_STORAGE_PATH)) {
     try {
       const content = fs.readFileSync(LOCAL_STORAGE_PATH, 'utf8');
       memoryDb = JSON.parse(content);
-      console.log('📦 Loaded existing local database snapshot.');
-    } catch (err) {
-      console.warn('⚠️ Could not parse local DB file, using fresh seed data.');
+    } catch {
       memoryDb = JSON.parse(JSON.stringify(initialData));
-      saveLocalDb();
     }
-  } else {
-    memoryDb = JSON.parse(JSON.stringify(initialData));
-    saveLocalDb();
   }
 }
 
@@ -43,73 +52,89 @@ function saveLocalDb() {
     ensureDir(LOCAL_STORAGE_PATH);
     fs.writeFileSync(LOCAL_STORAGE_PATH, JSON.stringify(memoryDb, null, 2), 'utf8');
   } catch (err) {
-    console.error('Error saving local db snapshot:', err);
+    console.error('Error saving local db snapshot:', err.message);
   }
 }
 
+async function getNextId(seqName) {
+  if (dbMode === 'mongodb') {
+    const doc = await Counter.findByIdAndUpdate(
+      seqName,
+      { $inc: { seq: 1 } },
+      { upsert: true, new: true }
+    );
+    return doc.seq;
+  }
+  const list = memoryDb[seqName] || [];
+  const max = list.reduce((acc, item) => Math.max(acc, Number(item.id) || 0), 0);
+  return max + 1;
+}
+
 async function initDB() {
-  loadLocalDb();
+  if (dbInitPromise) return dbInitPromise;
 
-  const host = process.env.MYSQL_HOST || 'localhost';
-  const user = process.env.MYSQL_USER || 'root';
-  const password = process.env.MYSQL_PASSWORD || '';
-  const database = process.env.MYSQL_DATABASE || 'campusbuzz_db';
-  const port = parseInt(process.env.MYSQL_PORT || '3306', 10);
+  dbInitPromise = (async () => {
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    const isProd = process.env.NODE_ENV === 'production';
 
-  try {
-    console.log(`🔌 Attempting MySQL connection to ${user}@${host}:${port}/${database}...`);
-    const tempConnection = await mysql.createConnection({
-      host,
-      user,
-      password,
-      port
-    });
+    if (!mongoUri) {
+      if (isProd) {
+        dbMode = 'disconnected';
+        console.error('❌ MONGODB_URI is required in production environment.');
+        return;
+      }
+      loadLocalDb();
+      dbMode = 'memory';
+      console.warn('⚠️ MONGODB_URI not configured. Running in local fallback snapshot mode (dev only).');
+      return;
+    }
 
-    await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
-    await tempConnection.end();
+    try {
+      console.log('🔌 Connecting to MongoDB Atlas...');
+      // Tuned for long-running Express server on Render against Atlas M0/Flex limits
+      await mongoose.connect(mongoUri, {
+        dbName: process.env.MONGODB_DB_NAME || 'campusbuzz_db',
+        maxPoolSize: 20, // Safe headroom for concurrent requests within M0 connection caps
+        minPoolSize: 2, // Keep minimal warm connections without starving free-tier limits
+        maxIdleTimeMS: 300000, // Recycle idle sockets after 5 minutes
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 30000,
+        serverSelectionTimeoutMS: 5000
+      });
 
-    pool = mysql.createPool({
-      host,
-      user,
-      password,
-      database,
-      port,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
-    });
+      dbMode = 'mongodb';
+      console.log('✅ Connected to MongoDB Atlas successfully!');
 
-    // Test connection
-    const [rows] = await pool.query('SELECT 1 + 1 AS test');
-    dbMode = 'mysql';
-    console.log('✅ Connected to MySQL Database successfully!');
+      mongoose.connection.on('disconnected', () => {
+        console.warn('⚠️ MongoDB Atlas connection lost.');
+        dbMode = 'disconnected';
+      });
+      mongoose.connection.on('reconnected', () => {
+        console.log('🔄 MongoDB Atlas reconnected.');
+        dbMode = 'mongodb';
+      });
 
-    // Initialize tables if needed
-    const schemaSql = fs.readFileSync(path.join(__dirname, '../schema.sql'), 'utf8');
-    const statements = schemaSql
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--') && !s.toLowerCase().startsWith('create database') && !s.toLowerCase().startsWith('use '));
-
-    for (const stmt of statements) {
-      try {
-        await pool.query(stmt);
-      } catch (tableErr) {
-        // Table might already exist or minor dialect difference
+      await seedDatabaseIfNeeded();
+    } catch (err) {
+      console.error('❌ MongoDB Atlas connection error:', err.message);
+      if (isProd) {
+        dbMode = 'disconnected';
+      } else {
+        loadLocalDb();
+        dbMode = 'memory';
+        console.warn('⚠️ Falling back to local snapshot mode in development.');
       }
     }
-    console.log('✅ MySQL schema synchronized.');
-  } catch (err) {
-    dbMode = 'memory';
-    console.warn(`⚠️ MySQL not reachable (${err.message}).`);
-    console.log('🚀 Running in High-Performance Local Persistent Engine with identical MySQL schema & instant hot-reload.');
-  }
+  })();
+
+  return dbInitPromise;
 }
 
 module.exports = {
   initDB,
   getDbMode: () => dbMode,
-  getPool: () => pool,
+  isMongoConnected: () => dbMode === 'mongodb' && mongoose.connection.readyState === 1,
   getMemoryDb: () => memoryDb,
-  saveLocalDb
+  saveLocalDb,
+  getNextId
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { apiUrl } from '../config/api';
 import { X, User, Camera, Sparkles, Save, GraduationCap, Instagram, Youtube, Linkedin } from 'lucide-react';
 
 export default function EditProfileModal({ isOpen, onClose }) {
@@ -26,7 +27,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
 
     try {
       const studentId = currentUser?.id || 1;
-      const res = await fetch(`/api/students/${studentId}`, {
+      const res = await fetch(apiUrl(`/api/students/${studentId}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

@@ -8,7 +8,8 @@
     "start:backend": "npm --prefix backend start",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
-    "build:frontend": "npm --prefix frontend run build"
+    "build:frontend": "npm --prefix frontend run build",
+    "seed:mongo": "npm --prefix backend run seed:mongo"
   },
   "keywords": [
     "campusbuzz",
@@ -17,7 +18,7 @@
     "collegiate-network",
     "react",
     "express",
-    "mysql"
+    "mongodb"
   ],
   "author": "CampusBuzz Team",
   "license": "MIT"
