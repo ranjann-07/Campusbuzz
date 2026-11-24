@@ -22,15 +22,29 @@ const {
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-async function batchInsert(Model, items, chunkSize = 1000) {
+function normalizeDates(doc) {
+  const copy = { ...doc };
+  if (copy.created_at) copy.created_at = new Date(copy.created_at);
+  if (copy.updated_at) copy.updated_at = new Date(copy.updated_at);
+  if (copy.applied_at) copy.applied_at = new Date(copy.applied_at);
+  if (copy.registered_at) copy.registered_at = new Date(copy.registered_at);
+  if (copy.joined_at) copy.joined_at = new Date(copy.joined_at);
+  return copy;
+}
+
+async function batchInsertRaw(Model, items, chunkSize = 250) {
   if (!items || items.length === 0) return 0;
   let inserted = 0;
   for (let i = 0; i < items.length; i += chunkSize) {
-    const slice = items.slice(i, i + chunkSize);
-    await Model.insertMany(slice, { ordered: false }).catch((err) => {
-      // Ignore duplicate key errors during idempotent seeding
-      if (err.code !== 11000 && !err.writeErrors) throw err;
-    });
+    const slice = items.slice(i, i + chunkSize).map(normalizeDates);
+    try {
+      await Model.collection.insertMany(slice, { ordered: false });
+    } catch (err) {
+      // Ignore duplicate key (11000) / BulkWriteError for idempotent retries
+      if (err.code !== 11000 && err.name !== 'MongoBulkWriteError') {
+        throw err;
+      }
+    }
     inserted += slice.length;
   }
   return inserted;
@@ -48,9 +62,24 @@ async function syncCounter(seqName, Model) {
 }
 
 async function seedDatabaseIfNeeded({ force = false } = {}) {
-  const existingStudents = await Student.countDocuments();
-  if (existingStudents > 0 && !force) {
-    // Ensure counters exist even if collections were populated out of band
+  const [existingStudents, existingPosts, existingEvents, existingCampaigns, existingClubs] =
+    await Promise.all([
+      Student.countDocuments(),
+      Post.countDocuments(),
+      Event.countDocuments(),
+      Campaign.countDocuments(),
+      Club.countDocuments()
+    ]);
+
+  const needsSeed =
+    force ||
+    existingStudents < 10000 ||
+    existingPosts < 9000 ||
+    existingEvents === 0 ||
+    existingCampaigns === 0 ||
+    existingClubs === 0;
+
+  if (!needsSeed) {
     await Promise.all([
       syncCounter('students', Student),
       syncCounter('posts', Post),
@@ -62,7 +91,7 @@ async function seedDatabaseIfNeeded({ force = false } = {}) {
       syncCounter('messages', Message),
       syncCounter('activities', ActivityLog)
     ]);
-    return { seeded: false, existingStudents };
+    return { seeded: false, existingStudents, existingPosts };
   }
 
   const seedGzPath = path.join(__dirname, '../data/mongo_seed.json.gz');
@@ -70,9 +99,10 @@ async function seedDatabaseIfNeeded({ force = false } = {}) {
     throw new Error(`Seed file not found at ${seedGzPath}`);
   }
 
-  console.log('🌱 Seeding MongoDB Atlas from compressed CampusBuzz snapshot...');
-  const rawBuf = zlib.gunzipSync(fs.readFileSync(seedGzPath));
-  const payload = JSON.parse(rawBuf.toString('utf8'));
+  console.log('🌱 Low-memory streaming seed to MongoDB Atlas...');
+  let rawStr = zlib.gunzipSync(fs.readFileSync(seedGzPath)).toString('utf8');
+  let payload = JSON.parse(rawStr);
+  rawStr = null; // Free raw string immediately
 
   if (force) {
     await Promise.all([
@@ -92,19 +122,41 @@ async function seedDatabaseIfNeeded({ force = false } = {}) {
     ]);
   }
 
-  await batchInsert(Student, payload.students, 1000);
-  await batchInsert(Post, payload.posts, 1000);
-  await batchInsert(Event, payload.events, 200);
-  await batchInsert(Campaign, payload.campaigns, 200);
-  await batchInsert(Club, payload.clubs, 200);
-  await batchInsert(PostComment, payload.post_comments, 500);
-  await batchInsert(PostLike, payload.post_likes, 500);
-  await batchInsert(EventRegistration, payload.event_registrations, 500);
-  await batchInsert(CampaignApplication, payload.campaign_applications, 500);
-  await batchInsert(ClubMember, payload.club_members, 500);
-  await batchInsert(Collaboration, payload.collaborations, 200);
-  await batchInsert(Message, payload.messages, 200);
-  await batchInsert(ActivityLog, payload.activities, 200);
+  if (force || existingStudents < 10000) {
+    await batchInsertRaw(Student, payload.students, 250);
+  }
+  payload.students = null;
+
+  if (force || existingPosts < 9000) {
+    await batchInsertRaw(Post, payload.posts, 250);
+  }
+  payload.posts = null;
+
+  if (force || existingEvents === 0) await batchInsertRaw(Event, payload.events, 100);
+  payload.events = null;
+
+  if (force || existingCampaigns === 0) await batchInsertRaw(Campaign, payload.campaigns, 100);
+  payload.campaigns = null;
+
+  if (force || existingClubs === 0) await batchInsertRaw(Club, payload.clubs, 100);
+  payload.clubs = null;
+
+  await batchInsertRaw(PostComment, payload.post_comments, 200);
+  payload.post_comments = null;
+  await batchInsertRaw(PostLike, payload.post_likes, 200);
+  payload.post_likes = null;
+  await batchInsertRaw(EventRegistration, payload.event_registrations, 200);
+  payload.event_registrations = null;
+  await batchInsertRaw(CampaignApplication, payload.campaign_applications, 200);
+  payload.campaign_applications = null;
+  await batchInsertRaw(ClubMember, payload.club_members, 200);
+  payload.club_members = null;
+  await batchInsertRaw(Collaboration, payload.collaborations, 100);
+  payload.collaborations = null;
+  await batchInsertRaw(Message, payload.messages, 100);
+  payload.messages = null;
+  await batchInsertRaw(ActivityLog, payload.activities, 100);
+  payload = null;
 
   await Promise.all([
     syncCounter('students', Student),
@@ -118,8 +170,10 @@ async function seedDatabaseIfNeeded({ force = false } = {}) {
     syncCounter('activities', ActivityLog)
   ]);
 
-  const finalStudents = await Student.countDocuments();
-  const finalPosts = await Post.countDocuments();
+  const [finalStudents, finalPosts] = await Promise.all([
+    Student.countDocuments(),
+    Post.countDocuments()
+  ]);
   console.log(`✅ MongoDB Seed Complete: ${finalStudents} students, ${finalPosts} posts.`);
   return { seeded: true, students: finalStudents, posts: finalPosts };
 }
@@ -134,7 +188,7 @@ if (require.main === module) {
   mongoose
     .connect(uri, {
       dbName: process.env.MONGODB_DB_NAME || 'campusbuzz_db',
-      maxPoolSize: 20,
+      maxPoolSize: 10,
       serverSelectionTimeoutMS: 10000
     })
     .then(async () => {

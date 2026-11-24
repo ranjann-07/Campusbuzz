@@ -114,7 +114,10 @@ async function initDB() {
         dbMode = 'mongodb';
       });
 
-      await seedDatabaseIfNeeded();
+      // Run seed asynchronously in background so Render health check succeeds rapidly on boot
+      seedDatabaseIfNeeded().catch((seedErr) => {
+        console.error('⚠️ Background MongoDB seed warning:', seedErr.message);
+      });
     } catch (err) {
       console.error('❌ MongoDB Atlas connection error:', err.message);
       if (isProd) {
