@@ -14,12 +14,26 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express_4-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB-Atlas_%2B_Mongoose_9-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
-[![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-[![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://render.com/)
+[![Vercel](https://img.shields.io/badge/Live_Frontend-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://campusbuzz-rosy.vercel.app)
+[![Render](https://img.shields.io/badge/Live_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://campusbuzz-api.onrender.com/api/health)
 
-[Overview](#-overview) • [Architecture](#-system-architecture) • [Key Features](#-key-features) • [Local Setup](#-local-development-setup) • [Cloud Deployment](#-production-deployment-vercel--render--mongodb-atlas) • [API Docs](#-api-endpoints-reference)
+[Live App](#-live-deployment) • [Overview](#-overview) • [Architecture](#-system-architecture) • [Key Features](#-key-features) • [Local Setup](#-local-development-setup) • [Cloud Deployment](#-production-deployment-vercel--render--mongodb-atlas) • [API Docs](#-api-endpoints-reference)
 
 </div>
+
+---
+
+## 🌐 Live Deployment
+
+| Service | Provider | Live URL |
+| :--- | :--- | :--- |
+| **Live Web App** | Vercel | https://campusbuzz-rosy.vercel.app |
+| **Backend REST API** | Render (`campusbuzz-api`) | https://campusbuzz-api.onrender.com |
+| **API Health Check** | Render | https://campusbuzz-api.onrender.com/api/health |
+| **Database Telemetry** | MongoDB Atlas (`campusbuzz_db`) | https://campusbuzz-api.onrender.com/api/db-status |
+| **Source Repository** | GitHub | https://github.com/ranjann-07/Campusbuzz |
+
+> **Note:** The backend runs on Render's free tier, so after ~15 minutes of inactivity the first request may take ~15–50 seconds while the server wakes up.
 
 ---
 
@@ -179,7 +193,7 @@ Open **[http://localhost:3000/](http://localhost:3000/)** in your browser.
    | `JWT_SECRET` | Strong random secret (auto-generated via `render.yaml`) |
    | `MONGODB_URI` | Your MongoDB Atlas connection URI |
    | `MONGODB_DB_NAME` | `campusbuzz_db` |
-   | `FRONTEND_URL` | Your Vercel production URL (e.g. `https://campusbuzz.vercel.app`) |
+   | `FRONTEND_URL` | Your Vercel production URL (`https://campusbuzz-rosy.vercel.app`) |
    | `CORS_ORIGIN` | Comma-separated allowed origins (Vercel URL) |
    | `ALLOW_VERCEL_PREVIEWS` | `true` (allows `*.vercel.app` preview deployments) |
 
