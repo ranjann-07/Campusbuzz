@@ -1,0 +1,472 @@
+// Rich realistic seed data for CampusBuzz
+module.exports = {
+  users: [
+    {
+      id: 1,
+      name: "Aanya Sharma",
+      email: "aanya@campus.edu",
+      password: "password123",
+      role: "creator",
+      college: "Delhi University",
+      department: "Media & Journalism",
+      avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80",
+      status: "active",
+      created_at: "2026-01-10T10:00:00Z"
+    },
+    {
+      id: 2,
+      name: "Admin Karan",
+      email: "admin@campusbuzz.com",
+      password: "adminpassword",
+      role: "admin",
+      college: "CampusBuzz Central HQ",
+      department: "Network Operations",
+      avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80",
+      status: "active",
+      created_at: "2026-01-01T10:00:00Z"
+    },
+    {
+      id: 3,
+      name: "Arjun Mehta",
+      email: "arjun@iitb.ac.in",
+      password: "password123",
+      role: "creator",
+      college: "IIT Bombay",
+      department: "Computer Science",
+      avatar_url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=80",
+      status: "active",
+      created_at: "2026-01-12T10:00:00Z"
+    }
+  ],
+
+  creators: [
+    {
+      id: 1,
+      user_id: 1,
+      name: "Aanya Sharma",
+      college: "Delhi University",
+      department: "Media & Journalism",
+      instagram: "aanya.sharmaa",
+      youtube: "AanyaSharmaVlogs",
+      followers: 24800,
+      engagement_rate: 4.8,
+      category: "Lifestyle",
+      avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80",
+      bio: "Lifestyle, aesthetic campus fashion, and creative storytelling across college campuses in Delhi NCR.",
+      verification_status: "verified",
+      total_collaborations: 14,
+      rating: 4.95,
+      is_spotlight: true,
+      badge: "Top Creator of the Month",
+      created_at: "2026-01-10T10:00:00Z"
+    },
+    {
+      id: 2,
+      user_id: 3,
+      name: "Arjun Mehta",
+      college: "IIT Bombay",
+      department: "Computer Science",
+      instagram: "arjun.tech",
+      youtube: "ArjunMehtaTech",
+      followers: 21300,
+      engagement_rate: 4.1,
+      category: "Technology",
+      avatar_url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=80",
+      bio: "Hardware hacks, AI experiments, developer life, and tech teardowns for future engineers.",
+      verification_status: "verified",
+      total_collaborations: 11,
+      rating: 4.88,
+      is_spotlight: false,
+      badge: "Tech Pioneer",
+      created_at: "2026-01-12T10:00:00Z"
+    },
+    {
+      id: 3,
+      user_id: null,
+      name: "Riya Patel",
+      college: "NIFT Delhi",
+      department: "Fashion Design",
+      instagram: "riya.stylez",
+      youtube: "RiyaPatelFashion",
+      followers: 18900,
+      engagement_rate: 3.8,
+      category: "Fashion",
+      avatar_url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80",
+      bio: "Sustainable campus fits, styling thrifted vintage gear, and fashion runway vlogs.",
+      verification_status: "verified",
+      total_collaborations: 9,
+      rating: 4.82,
+      is_spotlight: false,
+      badge: "Style Icon",
+      created_at: "2026-01-15T10:00:00Z"
+    },
+    {
+      id: 4,
+      user_id: null,
+      name: "Kabir Singh",
+      college: "St. Xavier's Mumbai",
+      department: "Mass Communication",
+      instagram: "kabir.clicks",
+      youtube: "KabirSinghFilm",
+      followers: 16200,
+      engagement_rate: 3.9,
+      category: "Photography",
+      avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80",
+      bio: "Street photography, cinematic campus reels, and color grading tutorials for budding visual artists.",
+      verification_status: "verified",
+      total_collaborations: 8,
+      rating: 4.79,
+      is_spotlight: false,
+      badge: "Visual Maestro",
+      created_at: "2026-01-18T10:00:00Z"
+    },
+    {
+      id: 5,
+      user_id: null,
+      name: "Tanya Verma",
+      college: "Christ University",
+      department: "Performing Arts",
+      instagram: "tanya.beats",
+      youtube: "TanyaVermaAcoustic",
+      followers: 31400,
+      engagement_rate: 5.2,
+      category: "Music",
+      avatar_url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80",
+      bio: "Original indie pop tracks, acoustic campus covers, and live jam session organizer.",
+      verification_status: "verified",
+      total_collaborations: 18,
+      rating: 4.98,
+      is_spotlight: false,
+      badge: "Chart Buster",
+      created_at: "2026-01-20T10:00:00Z"
+    },
+    {
+      id: 6,
+      user_id: null,
+      name: "Rohan Das",
+      college: "BITS Pilani",
+      department: "Electrical & Robotics",
+      instagram: "rohandas_code",
+      youtube: "CodeWithRohan",
+      followers: 14700,
+      engagement_rate: 4.4,
+      category: "Technology",
+      avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80",
+      bio: "Autonomous drones, ROS2 tutorials, and collegiate hackathon preparation strategies.",
+      verification_status: "verified",
+      total_collaborations: 6,
+      rating: 4.75,
+      is_spotlight: false,
+      badge: "Hardware Whiz",
+      created_at: "2026-01-25T10:00:00Z"
+    },
+    {
+      id: 7,
+      user_id: null,
+      name: "Ananya Joshi",
+      college: "Ashoka University",
+      department: "Psychology & Sports",
+      instagram: "ananya.fit",
+      youtube: "AnanyaMovement",
+      followers: 19500,
+      engagement_rate: 4.6,
+      category: "Fitness",
+      avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=80",
+      bio: "Campus yoga, calisthenics, dorm-friendly nutrition, and mental wellness for students.",
+      verification_status: "verified",
+      total_collaborations: 10,
+      rating: 4.87,
+      is_spotlight: false,
+      badge: "Wellness Leader",
+      created_at: "2026-02-01T10:00:00Z"
+    },
+    {
+      id: 8,
+      user_id: null,
+      name: "Devansh Roy",
+      college: "SRM Chennai",
+      department: "Information Technology",
+      instagram: "devansh_esports",
+      youtube: "DevanshValorant",
+      followers: 28100,
+      engagement_rate: 5.0,
+      category: "Gaming",
+      avatar_url: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=500&q=80",
+      bio: "Competitive Valorant & BGMI streamer, campus tournament caster, and gaming gear enthusiast.",
+      verification_status: "pending",
+      total_collaborations: 12,
+      rating: 4.80,
+      is_spotlight: false,
+      badge: "Esports Champion",
+      created_at: "2026-02-05T10:00:00Z"
+    }
+  ],
+
+  campaigns: [
+    {
+      id: 1,
+      name: "Red Bull Campus Energy Fest 2026",
+      description: "High-octane campus activation looking for 10 creators to document extreme sports, gaming showdowns, and campus hype reels.",
+      brand: "Red Bull India",
+      budget: 150000,
+      deadline: "2026-03-30",
+      target_creators: 10,
+      status: "active",
+      category: "Lifestyle & Sports",
+      deliverables: "2 Instagram Reels + 3 Stories + On-ground event appearance",
+      created_at: "2026-02-10T10:00:00Z"
+    },
+    {
+      id: 2,
+      name: "Spotify Campus Beats Ambassador Program",
+      description: "Promote student subscription tier and collaborate with indie collegiate musicians for curated playlists.",
+      brand: "Spotify",
+      budget: 220000,
+      deadline: "2026-04-15",
+      target_creators: 15,
+      status: "active",
+      category: "Music & Entertainment",
+      deliverables: "1 YouTube integration + 2 TikTok/Reel sound showcases",
+      created_at: "2026-02-12T10:00:00Z"
+    },
+    {
+      id: 3,
+      name: "Notion AI Campus Fellowship",
+      description: "Showcase how Notion AI supercharges study workflows, hackathon management, and thesis writing.",
+      brand: "Notion",
+      budget: 180000,
+      deadline: "2026-03-25",
+      target_creators: 8,
+      status: "active",
+      category: "Technology & Productivity",
+      deliverables: "1 Comprehensive workflow reel + downloadable template link",
+      created_at: "2026-02-14T10:00:00Z"
+    },
+    {
+      id: 4,
+      name: "OnePlus Campus Student Pioneer Launch",
+      description: "Showcase flagship camera low-light photography during night campus cultural festivals.",
+      brand: "OnePlus",
+      budget: 350000,
+      deadline: "2026-04-05",
+      target_creators: 12,
+      status: "upcoming",
+      category: "Technology & Photography",
+      deliverables: "Unboxing reel + 5 night mode photo carousel posts",
+      created_at: "2026-02-18T10:00:00Z"
+    },
+    {
+      id: 5,
+      name: "Myntra Glamour Squad Fest",
+      description: "Curate college-ready OOTD (Outfit Of The Day) aesthetics for spring/summer campus wardrobe.",
+      brand: "Myntra",
+      budget: 120000,
+      deadline: "2026-03-10",
+      target_creators: 6,
+      status: "completed",
+      category: "Fashion & Lifestyle",
+      deliverables: "Try-on haul video + coupon code distribution",
+      created_at: "2026-01-20T10:00:00Z"
+    }
+  ],
+
+  collaborations: [
+    {
+      id: 1,
+      campaign_id: 1,
+      creator_id: 1,
+      campaign_name: "Red Bull Campus Energy Fest 2026",
+      creator_name: "Aanya Sharma",
+      project_status: "In Progress",
+      compensation: 25000,
+      deliverables_summary: "2 Reels + On-ground coverage",
+      updated_at: "2026-02-20T14:30:00Z",
+      created_at: "2026-02-15T10:00:00Z"
+    },
+    {
+      id: 2,
+      campaign_id: 2,
+      creator_id: 5,
+      campaign_name: "Spotify Campus Beats Ambassador Program",
+      creator_name: "Tanya Verma",
+      project_status: "In Review",
+      compensation: 32000,
+      deliverables_summary: "Live acoustic session + Playlist feature",
+      updated_at: "2026-02-21T16:00:00Z",
+      created_at: "2026-02-16T11:00:00Z"
+    },
+    {
+      id: 3,
+      campaign_id: 3,
+      creator_id: 2,
+      campaign_name: "Notion AI Campus Fellowship",
+      creator_name: "Arjun Mehta",
+      project_status: "Completed",
+      compensation: 22000,
+      deliverables_summary: "Study system template + 60s Tech demo",
+      updated_at: "2026-02-19T09:15:00Z",
+      created_at: "2026-02-14T08:30:00Z"
+    },
+    {
+      id: 4,
+      campaign_id: 4,
+      creator_id: 4,
+      campaign_name: "OnePlus Campus Student Pioneer Launch",
+      creator_name: "Kabir Singh",
+      project_status: "Requested",
+      compensation: 30000,
+      deliverables_summary: "Cinematic night photos + Review clip",
+      updated_at: "2026-02-22T11:45:00Z",
+      created_at: "2026-02-22T11:45:00Z"
+    }
+  ],
+
+  messages: [
+    {
+      id: 1,
+      collaboration_id: 1,
+      sender_name: "Red Bull India Rep",
+      sender_role: "brand",
+      text: "Hey Aanya! Loved your draft script for the breakdance stage reel. Keep the neon energy high!",
+      created_at: "2026-02-20T11:00:00Z"
+    },
+    {
+      id: 2,
+      collaboration_id: 1,
+      sender_name: "Aanya Sharma",
+      sender_role: "creator",
+      text: "Thanks! Shooting on the main quad today with our university dance society. Will upload the cut by tonight.",
+      created_at: "2026-02-20T12:15:00Z"
+    },
+    {
+      id: 3,
+      collaboration_id: 2,
+      sender_name: "Spotify Coordinator",
+      sender_role: "brand",
+      text: "Tanya, the audio mastering on your track preview is phenomenal! Send over the final link for approval.",
+      created_at: "2026-02-21T15:20:00Z"
+    }
+  ],
+
+  events: [
+    {
+      id: 1,
+      title: "Campus Creator Meetup 2026",
+      date: "Nov 24, 2026 • 4:00 PM",
+      location: "Media Lab, Block A",
+      description: "Exclusive gathering of Delhi NCR student creators, video podcasters, and brand marketing executives.",
+      category: "Networking & Showcase",
+      banner_url: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80",
+      registered_count: 142,
+      max_capacity: 180,
+      status: "upcoming",
+      created_at: "2026-02-01T10:00:00Z"
+    },
+    {
+      id: 2,
+      title: "Tech & Innovation Summit",
+      date: "Nov 27, 2026 • 10:00 AM",
+      location: "Main Auditorium",
+      description: "Pan-university showcase of robotics, Web3, generative AI creators, and venture pitch stages.",
+      category: "Technology",
+      banner_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
+      registered_count: 320,
+      max_capacity: 450,
+      status: "upcoming",
+      created_at: "2026-02-05T10:00:00Z"
+    },
+    {
+      id: 3,
+      title: "Cultural Fest 2026 Gala",
+      date: "Nov 29, 2026 • 6:30 PM",
+      location: "Central Amphitheatre",
+      description: "Annual multi-arts collegiate festival featuring music stages, fashion runways, and creator lounges.",
+      category: "Cultural & Arts",
+      banner_url: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80",
+      registered_count: 580,
+      max_capacity: 600,
+      status: "upcoming",
+      created_at: "2026-02-08T10:00:00Z"
+    },
+    {
+      id: 4,
+      title: "AI & Virtual Production Masterclass",
+      date: "Dec 05, 2026 • 2:00 PM",
+      location: "Design Studio 3B",
+      description: "Hands-on workshop demonstrating real-time camera tracking and generative backgrounds for creators.",
+      category: "Workshop",
+      banner_url: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80",
+      registered_count: 85,
+      max_capacity: 100,
+      status: "upcoming",
+      created_at: "2026-02-12T10:00:00Z"
+    }
+  ],
+
+  overviewStats: {
+    totalCreators: 248,
+    totalReach: "588.6K",
+    engagementRate: "3.32%",
+    activeCampaigns: 24,
+    socialEngagements: "50,000+",
+    colleges: 100
+  },
+
+  engagementChartData: [
+    { date: "Oct 25", reach: 18000, engagement: 8200 },
+    { date: "Oct 28", reach: 24000, engagement: 11500 },
+    { date: "Nov 1", reach: 21000, engagement: 9800 },
+    { date: "Nov 3", reach: 17500, engagement: 6500 },
+    { date: "Nov 5", reach: 26000, engagement: 13200 },
+    { date: "Nov 7", reach: 31000, engagement: 16800 },
+    { date: "Nov 9", reach: 28500, engagement: 14100 },
+    { date: "Nov 11", reach: 35000, engagement: 18900 },
+    { date: "Nov 13", reach: 39000, engagement: 21500 },
+    { date: "Nov 15", reach: 34000, engagement: 17800 },
+    { date: "Nov 18", reach: 42000, engagement: 23600 },
+    { date: "Nov 22", reach: 48000, engagement: 27900 }
+  ],
+
+  activities: [
+    {
+      id: 1,
+      user_name: "Aanya Sharma",
+      action: "submitted deliverables for",
+      target: "Red Bull Campus Energy Fest 2026",
+      time: "12 mins ago",
+      type: "campaign"
+    },
+    {
+      id: 2,
+      user_name: "Arjun Mehta",
+      action: "verified identity from",
+      target: "IIT Bombay",
+      time: "38 mins ago",
+      type: "creator"
+    },
+    {
+      id: 3,
+      user_name: "Spotify India",
+      action: "launched new creator campaign",
+      target: "Spotify Campus Beats Ambassador Program",
+      time: "2 hours ago",
+      type: "campaign"
+    },
+    {
+      id: 4,
+      user_name: "Tanya Verma",
+      action: "joined project collaboration with",
+      target: "Spotify",
+      time: "4 hours ago",
+      type: "collab"
+    },
+    {
+      id: 5,
+      user_name: "Central Student Union",
+      action: "published upcoming event",
+      target: "Campus Creator Meetup 2026",
+      time: "6 hours ago",
+      type: "event"
+    }
+  ]
+};
